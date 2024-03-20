@@ -8,7 +8,6 @@
 ![NextAuth.js](https://img.shields.io/badge/NextAuth.js-000000?logo=next.js&logoColor=whitelabelColor=000000)
 ![SWR](https://img.shields.io/badge/SWR-FF6347?logo=vercel&logoColor=whitelabelColor=FF6347)
 
-<img  src="public/assets/logo.png" alt="glora logo">
 
 ## Technologies Used
 
