@@ -8,13 +8,12 @@
 ![NextAuth.js](https://img.shields.io/badge/NextAuth.js-000000?logo=next.js&logoColor=whitelabelColor=000000)
 ![SWR](https://img.shields.io/badge/SWR-FF6347?logo=vercel&logoColor=whitelabelColor=FF6347)
 
-
 ## Technologies Used
 
 - **Frontend Framework**: Next.js - server actions
 - **Styling**: Tailwind CSS
 - **ORM**: Prisma ORM
-- **Database**: MongoDB
+- **Database**: MySQL
 - **Authentication**: NextAuth.js
 - **Data Fetching and Query**: SWR
 - **State Management**: Zustand
@@ -23,7 +22,6 @@
 - **Resend**: Email Provider
 - **Uploadthing**: File Handler
 - **bun**: Package Manager
-
 
 ## Environment Variables
 
