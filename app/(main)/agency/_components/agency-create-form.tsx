@@ -23,7 +23,10 @@ const phoneRegex = new RegExp(
 );
 
 const formSchema = z.object({
-  agencyLogo: z.string().min(1, { message: "Agency logo is reqiured" }),
+  agencyLogo: z
+    .string()
+    .min(1, { message: "Agency logo is reqiured" })
+    .optional(),
   agencyName: z.string().min(2, { message: "Minimum agency name length is 2" }),
   agencyEmail: z
     .string()

@@ -12,7 +12,7 @@ const FileUpload = ({
 }: {
   endpoint: "agencyLogo" | "subaccountLogo" | "avatar";
   onChange: any;
-  value: string;
+  value?: string;
 }) => {
   const type = value?.split(".").pop();
   if (value) {
@@ -49,9 +49,9 @@ const FileUpload = ({
   }
 
   return (
-    <div className="w-full bg-muted/30 hover:bg-muted/40 rounded-lg">
+    <div className=" w-full bg-muted/30 hover:bg-muted/40 rounded-lg">
       <UploadDropzone
-        className="hover:cursor-pointer ut-uploading:ut-button:bg-slate-500  ut-label:text-slate-500 ut-label:font-normal ut-button:bg-violet-600/70 ut-button:hover:cursor-pointer"
+        className="h-full hover:cursor-pointer ut-uploading:ut-button:bg-slate-500  ut-label:text-slate-500 ut-label:font-normal ut-button:bg-violet-600/70 ut-button:hover:cursor-pointer"
         endpoint={endpoint}
         onUploadError={(error) => console.log({ error })}
         onClientUploadComplete={(res) => {
