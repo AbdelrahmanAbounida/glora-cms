@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { UploadButton } from "@/lib/uploadthing";
+import FileUpload from "@/components/file-upload";
 
 const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
@@ -59,7 +61,27 @@ const AgencyCreateForm = () => {
             later from the agency settings tab.
           </p>
         </div>
-        <div className="flex flex-col gap-y-5 gap-4 border rounded-lg p-3 bg-slate-800/20">
+        <div className="flex flex-col gap-y-5 gap-4 border rounded-lg p-3 bg-muted/30">
+          {/** Agency Logo */}
+
+          <FormField
+            control={form.control}
+            name="agencyLogo"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel>Agency Logo</FormLabel>
+                <FormControl>
+                  <FileUpload
+                    endpoint="agencyLogo"
+                    onChange={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/** Agency  Name, Email */}
           <div className="flex w-full items-center gap-x-5 ">
             <FormField
