@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React from "react";
 import { FileIcon, Cross1Icon, CrossCircledIcon } from "@radix-ui/react-icons";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { UploadDropzone } from "@/lib/uploadthing";
 
 const FileUpload = ({
