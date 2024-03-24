@@ -1,6 +1,5 @@
 import React from "react";
 import { FcAndroidOs } from "react-icons/fc";
-import { ImAppleinc } from "react-icons/im";
 import { FaApple, FaStripe } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
