@@ -21,13 +21,13 @@ import SidebarOption from "./sidebar-option";
 
 export function SidebarMenuList() {
   return (
-    <Command className=" shadow-md">
+    <Command className="">
       <CommandInput className="" placeholder="Search." />
       <CommandList>
         <CommandEmpty>No options found.</CommandEmpty>
         <CommandGroup>
           <CommandItem className="my-3 p-0">
-            <div className="flex items-center w-full bg-violet-600 p-2 rounded-md">
+            <div className="flex items-center w-full text-white bg-violet-800 p-2 rounded-md">
               <CalendarIcon className="mr-2 h-4 w-4" />
               <span>Calendar</span>
             </div>
