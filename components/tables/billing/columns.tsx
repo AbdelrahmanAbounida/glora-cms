@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns/format";
 
-export type Payment = {
+export type BillingProps = {
   description: string;
   invoiceId: string;
   date: Date;
@@ -13,7 +13,7 @@ export type Payment = {
   amount: number;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<BillingProps>[] = [
   {
     accessorKey: "description",
     header: "Description",
