@@ -1,3 +1,4 @@
+import BillingTable from "@/components/tables/billing/billing-table";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PricingPlanProps, PricingPlansDetails } from "@/constants/pricing";
@@ -13,10 +14,10 @@ const Billing = () => {
         <h1 className="text-4xl">Billing</h1>
         <Separator className="my-3" />
 
-        <h2 className="text-xl mt-3">CurrentPlane</h2>
+        {/** Plans */}
+        <h2 className="text-2xl my-3">CurrentPlane</h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2  mt-3 sapce-x-3 gap-4 ">
-          {/** Plans */}
           {PricingPlansDetails.map((plan, index) => (
             <div
               key={index}
@@ -65,6 +66,10 @@ const Billing = () => {
             </div>
           ))}
         </div>
+
+        <h2 className="text-2xl mt-7">Payment History</h2>
+
+        <BillingTable />
       </div>
     </div>
   );

@@ -6,9 +6,15 @@ import { SidebarMenuList } from "./sidebar-menu-list";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
-const Sidebar = ({ sidebarOptoins }: { sidebarOptoins?: any[] }) => {
+const Sidebar = ({
+  sidebarOptoins,
+  agencyId,
+}: {
+  sidebarOptoins?: any[];
+  agencyId: string;
+}) => {
   return (
-    <div className=" p-3 w-full ">
+    <div className=" p-3 w-full   ">
       {/** logo */}
       <AspectRatio ratio={16 / 7} className="">
         <Image
@@ -35,7 +41,7 @@ const Sidebar = ({ sidebarOptoins }: { sidebarOptoins?: any[] }) => {
       ))} */}
 
       {/** Menu List */}
-      <SidebarMenuList />
+      <SidebarMenuList agencyId={agencyId} />
     </div>
   );
 };
