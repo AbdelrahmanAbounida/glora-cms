@@ -1,21 +1,24 @@
-import { Payment } from "../billing/columns";
-import { columns } from "./team-columns";
+import { TeamProps, columns } from "./team-columns";
 import { DataTable } from "./team-data-table";
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
+async function getData(): Promise<TeamProps[]> {
   return [
     {
-      description: "728ed52f",
-      invoiceId: "sk-asd32r23x3rc",
-      date: new Date("5-10-2024"),
-      paid: "paid",
-      amount: 100,
+      name: "Abdelrahman Yousef",
+      image: "/assets/pic.jpeg",
+      email: "abdel@example.com",
+      role: "AGENCY_OWNER",
+    },
+    {
+      name: "Mohamed Ibrahim",
+      image: "/assets/pic.jpeg",
+      email: "mohamed@gmail.com",
+      role: "SUBACCOUNT_GUEST",
     },
   ];
 }
 
-export default async function TeamTable() {
+export default async function DemoPage() {
   const data = await getData();
 
   return (
