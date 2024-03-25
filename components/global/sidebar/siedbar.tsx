@@ -9,9 +9,11 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 const Sidebar = ({
   sidebarOptoins,
   agencyId,
+  sideType,
 }: {
   sidebarOptoins?: any[];
   agencyId: string;
+  sideType: "agency" | "subaccount";
 }) => {
   return (
     <div className=" p-3 w-full   ">
@@ -41,7 +43,7 @@ const Sidebar = ({
       ))} */}
 
       {/** Menu List */}
-      <SidebarMenuList agencyId={agencyId} />
+      <SidebarMenuList sideType={sideType} agencyId={agencyId} />
     </div>
   );
 };

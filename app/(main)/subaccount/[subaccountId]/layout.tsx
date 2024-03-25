@@ -17,7 +17,7 @@ export default async function RootLayout({
       <div className="hidden md:flex w-[350px]  space-y-3 fixed inset-y-0 top-0 left-0 h-screen  shadow-md">
         {" "}
         {/** w-[200px] */}
-        <Sidebar sideType={"agency"} agencyId={params.agencyId} />
+        <Sidebar sideType={"subaccount"} agencyId={params.agencyId} />
       </div>
 
       <div className="w-full flex md:pl-[350px]  flex-col">
