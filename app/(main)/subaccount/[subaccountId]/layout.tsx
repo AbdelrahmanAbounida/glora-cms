@@ -25,7 +25,7 @@ export default async function RootLayout({
         <Navbar />
 
         {/** Main page */}
-        <div className=" bg-muted/20  m-5 rounded-sm my-2 p-3 h-full ">
+        <div className=" bg-muted/20  m-5 rounded-sm my-2 p-3  h-auto">
           {children}
         </div>
       </div>
