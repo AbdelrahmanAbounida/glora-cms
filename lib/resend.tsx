@@ -1,6 +1,6 @@
 import { Resend } from "resend";
-import VerifyEmailTemplate from "@/components/emails/verify-email-template";
-import { ResetEmailTemplate } from "@/components/emails/reset-password-template";
+import VerifyEmailTemplate from "@/components/emails-templates/verify-email-template";
+import { ResetEmailTemplate } from "@/components/emails-templates/reset-password-template";
 
 export const sendResendEmail = async (
   emailTemplate: "verifyEmail" | "forgetPassword",

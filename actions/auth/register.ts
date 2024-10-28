@@ -1,51 +1,40 @@
 "use server";
 
-import { getUserbyEmail } from "@/lib/user";
-import { registerSchema } from "@/schemas/auth-schemas";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
-import { prismadb } from "@/lib/db";
-import { sendResendEmail } from "@/email-provider/resend";
-import { generateToken } from "@/lib/tokens";
 
-export const registerUser = async ({
-  email,
-  password,
-  confirmPassword,
-}: z.infer<typeof registerSchema>) => {
-  if (password !== confirmPassword) {
-    return { error: "Passwords don't match" };
+import { db } from "@/lib/db";
+import { RegisterSchema } from "@/schemas/auth-schemas";
+import { getUserByEmail } from "./user";
+import { sendVerificationEmail } from "@/lib/mail";
+import { generateVerificationToken } from "@/lib/tokens";
+
+export const register = async (values: z.infer<typeof RegisterSchema>) => {
+  const validatedFields = RegisterSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
   }
-  try {
-    // check if user exists
-    const userExists = await getUserbyEmail({ email });
 
-    if (userExists) {
-      return { error: "User Already exists" };
-    }
+  const { email, password, name } = validatedFields.data;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    // create user
-    const hashedPassword = await bcrypt.hash(password, 10);
+  const existingUser = await getUserByEmail(email);
 
-    await prismadb.user.create({
-      data: {
-        email,
-        hashedPassword,
-      },
-    });
-    // send verification email
-    const token = await generateToken(email, "verification");
-    if (token) {
-      await sendResendEmail("verifyEmail", email, token.token);
-
-      return {
-        success: "A verification email has been sent to you",
-      };
-    } else {
-      return { error: "Something went wrong" };
-    }
-  } catch (error) {
-    console.log({ error });
-    return { error: "Failed to register user for this account" };
+  if (existingUser) {
+    return { error: "Email already in use!" };
   }
+
+  await db.user.create({
+    data: {
+      name,
+      email,
+      hashedPassword,
+    },
+  });
+
+  const verificationToken = await generateVerificationToken(email);
+  await sendVerificationEmail(verificationToken.email, verificationToken.token);
+
+  return { success: "Confirmation email sent!" };
 };

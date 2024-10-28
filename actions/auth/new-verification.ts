@@ -1,46 +1,39 @@
 "use server";
-import { prismadb } from "@/lib/db";
-import { getUserbyId } from "@/lib/user";
 
-export const verifyEmail = async (token: string) => {
-  // Check if token exists
-  if (!token) return { error: "Token doesn't exist" };
+import { db } from "@/lib/db";
+import { getVerificationTokenByToken } from "@/actions/auth/verification/verificiation-token";
+import { getUserByEmail } from "./user";
 
-  // check if user already verified
+export const newVerification = async (token: string) => {
+  const existingToken = await getVerificationTokenByToken(token);
 
-  const tokenexist = await prismadb.authToken.findUnique({
-    where: {
-      token,
-    },
-  });
-  if (!tokenexist) return { error: "Token is not correct" };
+  if (!existingToken) {
+    return { error: "Token does not exist! or You verified your email before" };
+  }
 
-  // check if there is no email for the given token
-  const user = await getUserbyId({ id: tokenexist.userId });
+  const hasExpired = new Date(existingToken.expires) < new Date();
 
-  if (!user) return { error: "No Email found for the given token" };
+  if (hasExpired) {
+    return { error: "Token has expired!" };
+  }
 
-  // check if the token expired
-  if (new Date().getTime() - tokenexist.expires.getTime() > 0)
-    return { error: "Token has expired" };
+  const existingUser = await getUserByEmail(existingToken.email);
 
-  // verify user
+  if (!existingUser) {
+    return { error: "Email does not exist!" };
+  }
 
-  await prismadb.user.update({
-    where: {
-      id: user.id,
-    },
+  await db.user.update({
+    where: { id: existingUser.id },
     data: {
       emailVerified: new Date(),
+      email: existingToken.email,
     },
   });
 
-  // delete the verification token
-  await prismadb.authToken.delete({
-    where: {
-      id: tokenexist.id,
-    },
+  await db.verificationToken.delete({
+    where: { id: existingToken.id },
   });
 
-  return { success: "Account has been verified successfully" };
+  return { success: "Email verified!" };
 };

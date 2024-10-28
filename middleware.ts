@@ -1,49 +1,51 @@
 import NextAuth from "next-auth";
-import authConfig from "./auth.config";
+
+import authConfig from "@/auth.config";
 import {
-  API_AUTH_PREFIX,
-  AUTH_ROUTES,
-  DEFAULT_LOGIN_REDIRECTED,
-  PROTECTED_ROUTES,
+  DEFAULT_LOGIN_REDIRECT,
+  apiAuthPrefix,
+  authRoutes,
+  publicRoutes,
 } from "@/routes";
-import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  // req.auth
   const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
 
-  const isLogedIn = !!req.auth;
-  const isProtectedRoute = PROTECTED_ROUTES.includes(nextUrl.pathname);
-  const isAuthRoute = AUTH_ROUTES.includes(nextUrl.pathname);
-  const isApiAuthRoute = nextUrl.pathname.startsWith(API_AUTH_PREFIX);
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  // if it is api route
   if (isApiAuthRoute) {
     return;
   }
-  // check if it is auth routes
-  // console.log({ isLogedIn, isProtectedRoute });
+
   if (isAuthRoute) {
-    if (isLogedIn) {
-      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECTED, nextUrl));
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return;
   }
-  // if it is protected route
-  if (isProtectedRoute && !isLogedIn) {
-    let callbackurl = nextUrl.pathname;
-    console.log({ callbackurl });
-    if (nextUrl.search) callbackurl += nextUrl.search;
-    const encodedCallbackUrl = encodeURIComponent(callbackurl);
-    return NextResponse.redirect(
-      new URL(`/login?callbackurl=${encodedCallbackUrl}`, nextUrl)
+
+  if (!isLoggedIn && !isPublicRoute) {
+    let callbackUrl = nextUrl.pathname;
+    if (nextUrl.search) {
+      callbackUrl += nextUrl.search;
+    }
+
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+    return Response.redirect(
+      new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
     );
   }
+
   return;
 });
 
+// Optionally, don't invoke Middleware on some paths
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

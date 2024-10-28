@@ -1,72 +1,121 @@
 "use server";
-import { signIn } from "@/auth";
-import { sendResendEmail } from "@/email-provider/resend";
-import { generateToken } from "@/lib/tokens";
-import { prismadb } from "@/lib/db";
-import { DEFAULT_LOGIN_REDIRECTED } from "@/routes";
-import { loginSchema } from "@/schemas/auth-schemas";
+
+import * as z from "zod";
 import { AuthError } from "next-auth";
+import bcrypt from "bcryptjs";
 
-export const loginUser = async ({
-  email,
-  password,
-  callbackurl,
-}: {
-  email: string;
-  password: string;
-  callbackurl: string | null;
-}) => {
-  try {
-    const validFields = loginSchema.safeParse({ email, password });
-    if (!validFields.success) {
-      return { error: "Email or password is not valid" };
-    }
+import { db } from "@/lib/db";
+import { signIn } from "@/auth";
+import { LoginSchema } from "@/schemas/auth-schemas";
+import { getUserByEmail } from "./user";
+import { getTwoFactorTokenByEmail } from "@/actions/auth/verification/two-factor-token";
+import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import {
+  generateVerificationToken,
+  generateTwoFactorToken,
+} from "@/lib/tokens";
+import { getTwoFactorConfirmationByUserId } from "@/actions/auth/verification/two-factor-confirmation";
 
-    // check if email is verified
-    const user = await prismadb.user.findUnique({
-      where: {
-        email,
-      },
-    });
+export const login = async (
+  values: z.infer<typeof LoginSchema>,
+  callbackUrl?: string | null
+) => {
+  const validatedFields = LoginSchema.safeParse(values);
 
-    if (!user || !user?.email || !user.hashedPassword)
-      return { error: "Email doesn't exist" };
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
 
-    if (!user?.emailVerified) {
-      const token = await generateToken(email, "verification");
+  const { email, password, code } = validatedFields.data;
 
-      if (token) {
-        await sendResendEmail("verifyEmail", email, token.token);
-        return {
-          warning:
-            "You need to verify your email first. Please check your inbox",
-        };
-      } else {
-        return { error: "Something went wrong" };
+  const existingUser = await getUserByEmail(email);
+
+  if (!existingUser || !existingUser.email || !existingUser.hashedPassword) {
+    return { error: "Email does not exist!" };
+  }
+
+  // check password
+  const rightPass = await bcrypt.compare(password, existingUser.hashedPassword);
+  console.log({ rightPass });
+  if (!rightPass) {
+    return { error: "Password is not correct" };
+  }
+
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(
+      existingUser.email
+    );
+
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token
+    );
+
+    return { success: "Confirmation email sent!" };
+  }
+
+  if (existingUser.isTwoFactorEnabled && existingUser.email) {
+    if (code) {
+      const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
+
+      if (!twoFactorToken) {
+        return { error: "Invalid code!" };
       }
-    }
 
-    // login the user
+      if (twoFactorToken.token !== code) {
+        return { error: "Invalid code!" };
+      }
+
+      const hasExpired = new Date(twoFactorToken.expires) < new Date();
+
+      if (hasExpired) {
+        return { error: "Code expired!" };
+      }
+
+      await db.twoFactorToken.delete({
+        where: { id: twoFactorToken.id },
+      });
+
+      const existingConfirmation = await getTwoFactorConfirmationByUserId(
+        existingUser.id
+      );
+
+      if (existingConfirmation) {
+        await db.twoFactorConfirmation.delete({
+          where: { id: existingConfirmation.id },
+        });
+      }
+
+      await db.twoFactorConfirmation.create({
+        data: {
+          userId: existingUser.id,
+        },
+      });
+    } else {
+      const twoFactorToken = await generateTwoFactorToken(existingUser.email);
+      await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+
+      return { twoFactor: true };
+    }
+  }
+
+  try {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackurl || DEFAULT_LOGIN_REDIRECTED,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     });
-
-    return { success: "You logged in successfully" };
   } catch (error) {
-    console.log({ error });
-
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return { error: "Invalid credentials" };
-
+          return { error: "Invalid credentials!" };
         default:
-          return { error: "Something went wrong" };
+          return { error: "Something went wrong!" };
       }
     }
-    // return { error: "Something went wrong" };
+
     throw error;
   }
 };

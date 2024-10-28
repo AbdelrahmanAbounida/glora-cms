@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 
@@ -29,7 +30,7 @@ model Account {
   scope              String?
   id_token           String?  @db.Text
   session_state      String?
-
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([provider, providerAccountId])
 }
@@ -42,17 +43,45 @@ model User {
   image         String?
   role        UserRole @default(SUBACCOUNT_USER)
   accounts      Account[]
-  verificationToken AuthToken?    @relation(name: "VerificationToken")
-  passwordResetToken  AuthToken?  @relation(name: "PasswordResetToken")
+  // verificationToken AuthToken?    @relation(name: "VerificationToken")
+  // passwordResetToken  AuthToken?  @relation(name: "PasswordResetToken")
+  isTwoFactorEnabled Boolean @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
 }
 
-model AuthToken {
-  id    String @id @default(uuid())
-  userId  String @unique
+model TwoFactorConfirmation {
+  id String @id @default(uuid())
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+model VerificationToken {
+  id String @id @default(uuid())
+  email String
   token String @unique
   expires DateTime
-  verifyuser  User @relation(fields: [userId],name: "VerificationToken",references: [id],onDelete: Cascade,map: "authtoken_verifyuser_fk")
-  passwordResetuser  User @relation(fields: [userId],name: "PasswordResetToken",references: [id],onDelete: Cascade,map: "authtoken_resetpassworduser_fk")
-  
-  @@index([userId])
+
+  @@unique([email, token])
 }
+
+model PasswordResetToken {
+  id String @id @default(uuid())
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id String @id @default(uuid())
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+

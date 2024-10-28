@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { UploadButton } from "@/lib/uploadthing";
 import FileUpload from "@/components/global/file-upload";
 
 const phoneRegex = new RegExp(
@@ -23,10 +22,7 @@ const phoneRegex = new RegExp(
 );
 
 const formSchema = z.object({
-  agencyLogo: z
-    .string()
-    .min(1, { message: "Agency logo is reqiured" })
-    .optional(),
+  agencyLogo: z.any().refine((val) => !!val, "Agency Logo is required"),
   agencyName: z.string().min(2, { message: "Minimum agency name length is 2" }),
   agencyEmail: z
     .string()
@@ -37,7 +33,7 @@ const formSchema = z.object({
   adress: z.string().min(1, { message: "Adress is required" }),
   city: z.string().min(1, { message: "City is required" }),
   state: z.string().min(1, { message: "State is required" }),
-  zipcode: z.number().min(1, { message: "Zipcode is required" }),
+  zipcode: z.string().min(1, { message: "Zipcode is required" }),
   country: z.string().min(1, { message: "Country is required" }),
 });
 
@@ -47,6 +43,7 @@ const AgencyCreateForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log("Submitting form...");
     console.log({ values });
   };
 
@@ -64,20 +61,21 @@ const AgencyCreateForm = () => {
             later from the agency settings tab.
           </p>
         </div>
-        <div className="flex flex-col gap-y-2 gap-4 border rounded-lg p-3 bg-muted/30">
+        <div className="flex flex-col gap-y-2 gap-4 border rounded-lg p-3 bg-muted/10">
           {/** Agency Logo */}
 
           <FormField
             control={form.control}
             name="agencyLogo"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...fieldProps } }) => (
               <FormItem className="">
                 <FormLabel>Agency Logo</FormLabel>
                 <FormControl>
                   <FileUpload
-                    endpoint="agencyLogo"
-                    onChange={field.onChange}
-                    value={field.value}
+                    onChange={onChange}
+                    value={value}
+                    fieldProps={fieldProps}
+                    // fieldProps={fieldProps}
                   />
                 </FormControl>
                 <FormMessage />
@@ -118,7 +116,7 @@ const AgencyCreateForm = () => {
           {/** Phone number */}
           <FormField
             control={form.control}
-            name="agencyEmail"
+            name="agencyPhoneNumber"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Agency Phone Number</FormLabel>
