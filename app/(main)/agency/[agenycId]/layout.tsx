@@ -1,5 +1,7 @@
 import Navbar from "@/components/global/navbar/navbar";
 import Sidebar from "@/components/global/sidebar/siedbar";
+import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 
 export default async function RootLayout({
   children,
@@ -7,17 +9,27 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
   params: {
-    agencyId: string;
+    agenycId: string;
   };
 }>) {
-  console.log({ agencyId: params.agencyId });
+  // check if agency exists and if not redirect to create agency
+  const exist = await db.agency.findFirst({
+    where: {
+      id: params.agenycId,
+    },
+  });
+
+  if (!exist) {
+    return redirect("/agency");
+  }
+
   return (
     <div className="flex w-full h-screen">
       {/** sidebar */}
       <div className="hidden md:flex w-[350px]  space-y-3 fixed inset-y-0 top-0 left-0 h-screen  shadow-md">
         {" "}
         {/** w-[200px] */}
-        <Sidebar sideType={"agency"} agencyId={params.agencyId} />
+        <Sidebar sideType={"agency"} agencyId={params.agenycId} />
       </div>
 
       <div className="w-full flex md:pl-[350px]  flex-col">

@@ -17,48 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { UploadButton } from "@/lib/uploadthing";
 import FileUpload from "@/components/global/file-upload";
-
-const phoneRegex = new RegExp(
-  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
-);
-
-const formSchema = z.object({
-  agencyLogo: z
-    .string()
-    .min(1, { message: "Agency logo is reqiured" })
-    .optional(),
-  agencyName: z.string().min(2, { message: "Minimum agency name length is 2" }),
-  agencyEmail: z
-    .string()
-    .min(1, { message: "Agency email is requierd" })
-    .email("This is not a valid email"),
-  agencyPhoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
-  whiteLabel: z.boolean().default(false).optional(),
-  adress: z.string().min(1, { message: "Adress is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  state: z.string().min(1, { message: "State is required" }),
-  zipcode: z.number().min(1, { message: "Zipcode is required" }),
-  country: z.string().min(1, { message: "Country is required" }),
-});
+import { updateAgencyFormSchema } from "@/schemas/agency-schema";
 
 const AgencyDetails = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      adress: "1234 street",
-      agencyEmail: "agency@gmail.com",
-      agencyLogo: "/assets/logo.png",
-      agencyName: "Abdel Academy",
-      agencyPhoneNumber: "+10213213213",
-      city: "Hamburg",
-      country: "Germany",
-      state: "Hamburg",
-      whiteLabel: false,
-      zipcode: 123213,
-    },
+  const form = useForm<z.infer<typeof updateAgencyFormSchema>>({
+    resolver: zodResolver(updateAgencyFormSchema),
+    defaultValues: {},
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof updateAgencyFormSchema>) => {
     console.log({ values });
   };
 
@@ -81,14 +48,15 @@ const AgencyDetails = () => {
           <FormField
             control={form.control}
             name="agencyLogo"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...fieldProps } }) => (
               <FormItem className="">
                 <FormLabel>Agency Logo</FormLabel>
                 <FormControl>
                   <FileUpload
-                    endpoint="agencyLogo"
-                    onChange={field.onChange}
-                    value={field.value}
+                    onChange={onChange}
+                    value={value}
+                    fieldProps={fieldProps}
+                    // fieldProps={fieldProps}
                   />
                 </FormControl>
                 <FormMessage />
@@ -168,7 +136,7 @@ const AgencyDetails = () => {
           {/** Address */}
           <FormField
             control={form.control}
-            name="adress"
+            name="address"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Adress</FormLabel>

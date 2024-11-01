@@ -43,10 +43,16 @@ model User {
   image         String?
   role        UserRole @default(SUBACCOUNT_USER)
   accounts      Account[]
+  agencyId      String? // each user has only one agency 
+  agency        Agency?     @relation(fields: [agencyId],references: [id],onDelete: Cascade)
+  notifications   Notification[]
+
   // verificationToken AuthToken?    @relation(name: "VerificationToken")
   // passwordResetToken  AuthToken?  @relation(name: "PasswordResetToken")
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+
+  @@index([agencyId])
 }
 
 model TwoFactorConfirmation {
@@ -85,3 +91,70 @@ model TwoFactorToken {
   @@unique([email, token])
 }
 
+// Start Here 
+model Agency {
+  id String @id @default(uuid())
+  agencyName  String 
+  agencyLogo  String? 
+  agencyEmail String @unique
+  phoneNumber  String  // TODO:: to be validated 
+  whiteLabel  Boolean @default(false)
+  address String 
+  city  String?
+  state String? 
+  zipcode Int?
+  country String 
+
+  users            User[]
+  subaccounts     SubAccount[]
+  notifications   Notification[]
+  invitations   Invitation[]
+
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+}
+
+
+model SubAccount {
+  id String @id @default(uuid())
+  agencyId    String
+  agency      Agency    @relation(fields: [agencyId],references: [id],onDelete: Cascade)
+  notifications   Notification[]
+
+}
+
+model Notification {
+  id String @id @default(uuid())
+  agencyId    String
+  subAccountId  String?
+  userId       String
+  content       String
+ User       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Agency     Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  SubAccount SubAccount? @relation(fields: [subAccountId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+   @@index([agencyId])
+   @@index([subAccountId])
+
+}
+
+
+enum InvitationStatus {
+  ACCEPTED
+  REVOKED
+  PENDING
+}
+model Invitation {
+  id String @id @default(uuid())
+  senderEmail     String 
+  email      String @unique
+  agencyId    String 
+  agency      Agency @relation(fields: [agencyId],references: [id],onDelete: Cascade)
+  status   InvitationStatus @default(PENDING)
+  role      UserRole    @default(SUBACCOUNT_USER)
+  @@index([agencyId])
+}

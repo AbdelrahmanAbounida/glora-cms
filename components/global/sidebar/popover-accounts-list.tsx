@@ -23,20 +23,21 @@ import { PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 
-export function PopOverAccountsList() {
+export function AccountsSwitcher() {
+  // TODO:: use query/swr to load the agency and subaccounts accoring to user Role
   return (
     <Command className=" shadow-md p-3 border rounded-lg w-[325px] bg-muted/30">
-      <CommandInput placeholder="Search Account.." />
+      <CommandInput placeholder="Search Accounts.." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Accounts">
-          <CommandItem className="flex items-center justify-start space-x-5 bg-muted/30 my-3 rounded-lg border">
+        <CommandGroup heading="Agency">
+          <CommandItem className="flex items-center justify-start space-x-5 bg-muted/30 my-1 rounded-lg border">
             {/* <AspectRatio ratio={20 / 10} className="bg-muted"> */}
             <Image
-              src="/assets/logo.png"
+              src="/logo2.png"
               alt="Photo by Drew Beamer"
-              width={40}
-              height={40}
+              width={70}
+              height={70}
               className="rounded-md object-cover"
             />
             {/* </AspectRatio> */}
@@ -49,14 +50,14 @@ export function PopOverAccountsList() {
         </CommandGroup>
         {/* <CommandSeparator /> */}
 
-        <CommandGroup heading="Subaccounts">
+        <CommandGroup heading="Subaccounts" className="mt-4">
           <CommandItem className="flex items-center justify-start space-x-5  my-3 rounded-lg border">
             {/* <AspectRatio ratio={20 / 10} className="bg-muted"> */}
             <Image
-              src="/assets/logo.png"
+              src="/logo2.png"
               alt="Photo by Drew Beamer"
-              width={40}
-              height={40}
+              width={70}
+              height={70}
               className="rounded-md object-cover"
             />
             {/* </AspectRatio> */}

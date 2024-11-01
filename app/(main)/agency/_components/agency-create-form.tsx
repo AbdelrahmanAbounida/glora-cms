@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -16,35 +16,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import FileUpload from "@/components/global/file-upload";
-
-const phoneRegex = new RegExp(
-  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
-);
-
-const formSchema = z.object({
-  agencyLogo: z.any().refine((val) => !!val, "Agency Logo is required"),
-  agencyName: z.string().min(2, { message: "Minimum agency name length is 2" }),
-  agencyEmail: z
-    .string()
-    .min(1, { message: "Agency email is requierd" })
-    .email("This is not a valid email"),
-  agencyPhoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
-  whiteLabel: z.boolean().default(false).optional(),
-  adress: z.string().min(1, { message: "Adress is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  state: z.string().min(1, { message: "State is required" }),
-  zipcode: z.string().min(1, { message: "Zipcode is required" }),
-  country: z.string().min(1, { message: "Country is required" }),
-});
+import { createAgencyFormSchema } from "@/schemas/agency-schema";
+import { createAgency } from "@/actions/agency/create-agency";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 const AgencyCreateForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [createLoading, setcreateLoading] = useState(false);
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof createAgencyFormSchema>>({
+    resolver: zodResolver(createAgencyFormSchema),
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Submitting form...");
-    console.log({ values });
+  const onSubmit = async (values: z.infer<typeof createAgencyFormSchema>) => {
+    setcreateLoading(true);
+
+    try {
+      console.log("Creating Agency");
+      // TODO:: Store logo first
+      const newAgency = await createAgency({ ...values, agencyLogo: "" });
+      if (!newAgency) {
+        toast.error("Something went wrong while creating new agenecy");
+        return;
+      }
+      toast.success("Agency created successfully");
+      router.push(`/agency/${newAgency.id}`);
+    } catch (err) {
+      console.log({ err });
+      if (err) {
+        toast.error("" + err);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } finally {
+      setcreateLoading(false);
+    }
   };
 
   return (
@@ -116,7 +124,7 @@ const AgencyCreateForm = () => {
           {/** Phone number */}
           <FormField
             control={form.control}
-            name="agencyPhoneNumber"
+            name="phoneNumber"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Agency Phone Number</FormLabel>
@@ -155,7 +163,7 @@ const AgencyCreateForm = () => {
           {/** Address */}
           <FormField
             control={form.control}
-            name="adress"
+            name="address"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Adress</FormLabel>
@@ -224,9 +232,16 @@ const AgencyCreateForm = () => {
             )}
           />
         </div>
-        <Button className="mt-2" type="submit">
-          Create Agency
-        </Button>
+        {createLoading ? (
+          <Button disabled>
+            <Loader className="animate-spin mr-2 w-4 h-4" />
+            Loading
+          </Button>
+        ) : (
+          <Button disabled={createLoading} className="mt-2" type="submit">
+            Create Agency
+          </Button>
+        )}
       </form>
     </Form>
   );

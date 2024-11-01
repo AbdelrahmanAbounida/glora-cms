@@ -47,7 +47,7 @@ export function SidebarMenuList({
 
   return (
     <Command className="h-full w-full ">
-      <CommandInput className="" placeholder="Search." />
+      <CommandInput className="" placeholder="Search" />
       <CommandList className="h-full ">
         <CommandEmpty>No options found.</CommandEmpty>
         <CommandGroup className="h-full">

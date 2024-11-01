@@ -1,10 +1,11 @@
 import React from "react";
 import SidebarOption from "./sidebar-option";
-import PopOverAccounts from "./popover-accounts";
+import PopOverAccounts from "./accounts-switcher";
 import { Separator } from "@/components/ui/separator";
 import { SidebarMenuList } from "./sidebar-menu-list";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Logo from "@/components/logo";
 
 const Sidebar = ({
   sidebarOptoins,
@@ -18,13 +19,10 @@ const Sidebar = ({
   return (
     <div className=" p-3 w-full   ">
       {/** logo */}
-      <AspectRatio ratio={16 / 7} className="">
-        <Image
-          src="/assets/logo.png"
-          alt="Photo by Drew Beamer"
-          fill
-          className="rounded-md object-cover"
-        />
+      {/** TODO:: add logo */}
+      <AspectRatio ratio={16 / 5} className=" flex items-center justify-start">
+        {/* <Image src="/logo.png"  className="rounded-md object-cover" /> */}
+        <Logo className="" />
       </AspectRatio>
 
       {/** Popover accounts */}

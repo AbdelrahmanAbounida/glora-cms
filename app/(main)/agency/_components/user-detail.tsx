@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { updateUserSchema } from "@/schemas/user-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
@@ -18,25 +19,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
-const formSchema = z.object({
-  userFullname: z.string().min(1, { message: "User Fullname is required" }),
-  userLogo: z.string().min(1, { message: "User Logo is required" }),
-  email: z.string().min(1, { message: "Email is required" }),
-  userRole: z.enum(["", ...Object.values(UserRole)]),
-});
-
 const UserDetail = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "abdel@gmail.com",
-      userFullname: "Abdelrahman Yousef",
-      userLogo: "/assets/pic.jpeg",
-      userRole: "AGENCY_OWNER",
-    },
+  const form = useForm<z.infer<typeof updateUserSchema>>({
+    resolver: zodResolver(updateUserSchema),
+    defaultValues: {},
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof updateUserSchema>) => {
     console.log({ values });
   };
 
@@ -58,14 +47,15 @@ const UserDetail = () => {
           <FormField
             control={form.control}
             name="userLogo"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...fieldProps } }) => (
               <FormItem className="">
                 <FormLabel>Profile Logo</FormLabel>
                 <FormControl>
                   <FileUpload
-                    endpoint="agencyLogo"
-                    onChange={field.onChange}
-                    value={field.value}
+                    onChange={onChange}
+                    value={value}
+                    fieldProps={fieldProps}
+                    // fieldProps={fieldProps}
                   />
                 </FormControl>
                 <FormMessage />

@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { PopOverAccountsList } from "./popover-accounts-list";
+import { AccountsSwitcher } from "./popover-accounts-list";
 import { ArrowUpDownIcon, CompassIcon } from "lucide-react";
 
 const PopOverAccounts = () => {
@@ -29,7 +29,7 @@ const PopOverAccounts = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="">
-        <PopOverAccountsList />
+        <AccountsSwitcher />
       </PopoverContent>
     </Popover>
   );
