@@ -5,16 +5,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { AccountsSwitcher } from "./popover-accounts-list";
 import { ArrowUpDownIcon, CompassIcon } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { PlusCircle } from "lucide-react";
+import Image from "next/image";
 
-const PopOverAccounts = () => {
+const AccountSwitcher = () => {
   return (
     <Popover>
       <PopoverTrigger
         asChild
         className="w-full mt-5 py-7 rounded-lg border-none bg-muted/50"
       >
+        {/** Current Account */}
         <Button variant="outline" className="p-3">
           <div className="w-full flex items-center  justify-between ">
             <div className="flex space-x-1 items-center ">
@@ -29,10 +39,61 @@ const PopOverAccounts = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="">
-        <AccountsSwitcher />
+        <Command className=" shadow-md p-3 border rounded-lg w-[325px] bg-muted/30">
+          <CommandInput placeholder="Search Accounts.." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Agency">
+              <CommandItem className="flex items-center justify-start space-x-5 bg-muted/30 my-1 rounded-lg border">
+                {/* <AspectRatio ratio={20 / 10} className="bg-muted"> */}
+                <Image
+                  src="/logo2.png"
+                  alt="Photo by Drew Beamer"
+                  width={70}
+                  height={70}
+                  className="rounded-md object-cover"
+                />
+                {/* </AspectRatio> */}
+
+                <div className="flex flex-col gap-1">
+                  <p className="font-bold">Bold Shift</p>
+                  <p className="text-muted-foreground text-sm">1234 street</p>
+                </div>
+              </CommandItem>
+            </CommandGroup>
+            {/* <CommandSeparator /> */}
+
+            <CommandGroup heading="Subaccounts" className="mt-4">
+              <CommandItem className="flex items-center justify-start space-x-5  my-3 rounded-lg border">
+                {/* <AspectRatio ratio={20 / 10} className="bg-muted"> */}
+                <Image
+                  src="/logo2.png"
+                  alt="Photo by Drew Beamer"
+                  width={70}
+                  height={70}
+                  className="rounded-md object-cover"
+                />
+                {/* </AspectRatio> */}
+
+                <div className="flex flex-col gap-1">
+                  <p className="font-bold">Test Shift</p>
+                  <p className="text-muted-foreground text-sm">1234 street</p>
+                </div>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+          <div className="p-2">
+            <Button className="flex items-center justify-center mt-3 w-full">
+              <div className="flex items-center justify-center space-x-2">
+                <PlusCircle className="w-4 h-4" />
+                <p className="text-md">Create Sub Account</p>
+              </div>
+            </Button>
+          </div>
+        </Command>
       </PopoverContent>
     </Popover>
   );
 };
 
-export default PopOverAccounts;
+export default AccountSwitcher;

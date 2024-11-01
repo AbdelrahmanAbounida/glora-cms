@@ -46,6 +46,7 @@ model User {
   agencyId      String? // each user has only one agency 
   agency        Agency?     @relation(fields: [agencyId],references: [id],onDelete: Cascade)
   notifications   Notification[]
+  permission      Permission[]
 
   // verificationToken AuthToken?    @relation(name: "VerificationToken")
   // passwordResetToken  AuthToken?  @relation(name: "PasswordResetToken")
@@ -133,8 +134,24 @@ model SubAccount {
   country          String
   agency      Agency    @relation(fields: [agencyId],references: [id],onDelete: Cascade)
   notifications   Notification[]
+  permission      Permission[]
 
  @@index([agencyId])
+}
+
+model Permission {
+  id  String  @id @default(uuid())
+  giverId       String   // the person who gave this permission to the below user Email
+  subaccountId    String
+  subAccount      SubAccount  @relation(fields: [subaccountId],references: [id],onDelete: Cascade)
+
+  userEmail     String
+  user          User    @relation(fields: [userEmail],references: [id],onDelete: Cascade)
+
+  hasAccess     Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Notification {

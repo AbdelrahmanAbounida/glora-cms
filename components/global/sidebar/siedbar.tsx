@@ -1,6 +1,6 @@
 import React from "react";
 import SidebarOption from "./sidebar-option";
-import PopOverAccounts from "./accounts-switcher";
+import AccountSwitcher from "./accounts-switcher";
 import { Separator } from "@/components/ui/separator";
 import { SidebarMenuList } from "./sidebar-menu-list";
 import Image from "next/image";
@@ -26,7 +26,7 @@ const Sidebar = ({
       </AspectRatio>
 
       {/** Popover accounts */}
-      <PopOverAccounts />
+      <AccountSwitcher />
 
       {/** Menu list header */}
       <div className="flex flex-col">
