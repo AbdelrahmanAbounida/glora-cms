@@ -26,7 +26,7 @@ const Sidebar = ({
       </AspectRatio>
 
       {/** Popover accounts */}
-      <AccountSwitcher />
+      <AccountSwitcher agencyId={agencyId} />
 
       {/** Menu list header */}
       <div className="flex flex-col">

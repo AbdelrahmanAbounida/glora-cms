@@ -82,9 +82,11 @@ const handleUploadImage = async (file: File, subaccountId: string) => {
 const CreateSubAccountModal = ({
   children,
   agencyId,
+  disabled = false,
 }: {
   children?: React.ReactNode;
   agencyId: string;
+  disabled?: boolean;
 }) => {
   const [createLoading, setcreateLoading] = useState(false);
   const router = useRouter();
@@ -135,7 +137,7 @@ const CreateSubAccountModal = ({
     >
       {" "}
       {/** setsubmitError({ title: false, file: false }) */}
-      <DialogTrigger>
+      <DialogTrigger disabled={disabled} className="w-full">
         {children ? (
           children
         ) : (
