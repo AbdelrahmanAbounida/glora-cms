@@ -68,3 +68,22 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* For most modern browsers */
+::-webkit-scrollbar {
+  width: 12px; /* Width for vertical scrollbar */
+  height: 12px; /* Height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #201f20; /* Background of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8e8d8f; /* Scrollbar color */
+  border-radius: 6px; /* Rounding the edges */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color on hover */
+}

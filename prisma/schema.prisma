@@ -118,9 +118,23 @@ model Agency {
 model SubAccount {
   id String @id @default(uuid())
   agencyId    String
+
+  name             String
+  subAccountLogo   String?                    @db.Text
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  companyEmail     String                    @db.Text
+  companyPhone     String
+  goal             Int                       @default(5)
+  address          String
+  city             String
+  zipCode          String
+  state            String
+  country          String
   agency      Agency    @relation(fields: [agencyId],references: [id],onDelete: Cascade)
   notifications   Notification[]
 
+ @@index([agencyId])
 }
 
 model Notification {
