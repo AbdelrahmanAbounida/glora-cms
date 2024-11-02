@@ -21,6 +21,50 @@ import { createAgency } from "@/actions/agency/create-agency";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
+import { computeSHA256, uploadAgencyLogo } from "@/lib/s3";
+import { updateAgencyLogo } from "@/actions/agency/update-agent";
+
+const handleUploadImage = async (file: File, agencyId: string) => {
+  try {
+    // const url = URL.createObjectURL(file);
+
+    // get signed url
+    const checksum = await computeSHA256(file);
+    const signedURLResult = await uploadAgencyLogo({
+      agencyId,
+      checksum,
+    });
+
+    if (signedURLResult?.error) {
+      toast.error(signedURLResult.error);
+      return;
+    }
+
+    if (signedURLResult?.url) {
+      // get image
+      const response = await fetch(signedURLResult?.url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to upload image");
+        return;
+      }
+      return signedURLResult.url.split("?")[0];
+      // toast.success("File uploaded successfully");
+    } else {
+      toast.error("Something went wrong");
+      return;
+    }
+  } catch (error) {
+    console.log({ error });
+    toast.error("Something went wrong");
+  }
+};
 
 const AgencyCreateForm = () => {
   const [createLoading, setcreateLoading] = useState(false);
@@ -41,6 +85,14 @@ const AgencyCreateForm = () => {
         toast.error("Something went wrong while creating new agenecy");
         return;
       }
+      const imageUrl = await handleUploadImage(values.agencyLogo, newAgency.id);
+
+      // update the subaccount to this logo
+      await updateAgencyLogo({
+        agencyId: newAgency.id,
+        logo: imageUrl,
+      });
+
       toast.success("Agency created successfully");
       router.push(`/agency/${newAgency.id}`);
     } catch (err) {

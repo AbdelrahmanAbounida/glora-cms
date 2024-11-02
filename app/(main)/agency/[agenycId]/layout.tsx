@@ -2,6 +2,7 @@ import Navbar from "@/components/global/navbar/navbar";
 import Sidebar from "@/components/global/sidebar/siedbar";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
+import NextTopLoader from "nextjs-toploader";
 
 export default async function RootLayout({
   children,
@@ -26,9 +27,11 @@ export default async function RootLayout({
   return (
     <div className="flex w-full h-screen">
       {/** sidebar */}
-      <div className="hidden md:flex w-[350px]  space-y-3 fixed inset-y-0 top-0 left-0 h-screen  shadow-md">
+      <div className="hidden md:flex flex-col w-[350px]  space-y-3 fixed inset-y-0 top-0 left-0 h-screen  shadow-md">
         {" "}
-        {/** w-[200px] */}
+        <div className="w-full">
+          <NextTopLoader color="#4F46E5" speed={300} />
+        </div>
         <Sidebar sideType={"agency"} agencyId={params.agenycId} />
       </div>
 

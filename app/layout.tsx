@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "sonner";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,9 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <div className="w-full ">
+              {/* <NextTopLoader color="#5B21B6" speed={300} /> */}
+            </div>
             {children}
           </ThemeProvider>
           <Toaster richColors />
