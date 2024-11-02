@@ -138,20 +138,20 @@ export const uploadSubaccountLogo = async ({
     const url = await getSignedUrl(
       s3Client,
       putObjectCommand,
-      { expiresIn: 60 } // 60 seconds
+      { expiresIn: 120 } // 60 seconds
     );
-    await db.agency.update({
+    await db.subAccount.update({
       where: {
         id: subaccountId,
       },
       data: {
-        agencyLogo: url.split("?")[0],
+        subAccountLogo: url.split("?")[0],
       },
     });
 
     return { url };
   } catch (error) {
-    console.log({ error });
+    console.log({ S3Error: error });
     return { error: "Failed to upload the logo" };
   }
 };
@@ -162,8 +162,6 @@ export const uploadBufferToS3 = async (
   contentType: string,
   metadata?: object
 ): Promise<string> => {
-  /** return image url including generated key of uploaded buffer */
-
   const generatedKey = await createRandomImageKey();
   const params: PutObjectCommandInput = {
     Bucket: process.env.AWS_BUCKET_NAMEE!,
@@ -171,17 +169,16 @@ export const uploadBufferToS3 = async (
     Metadata: metadata as {},
     Body: buffer,
     ContentType: contentType,
-    //   ChecksumSHA256: checksum,
+    ChecksumSHA256: await computeSHA256(new File([buffer], "filename")), // Assuming 'filename' is valid
   };
 
   const command = new PutObjectCommand(params);
   try {
-    const data = await s3Client.send(command);
-    const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${generatedKey}`;
-    return imageUrl;
+    await s3Client.send(command);
+    return `https://${process.env.AWS_BUCKET_NAMEE}.s3.amazonaws.com/${generatedKey}`;
   } catch (error) {
-    console.error("Error uploading file to S3:", error);
-    throw new Error("Failed to upload file to S3");
+    console.error("Error uploading buffer to S3:", error);
+    throw new Error("Failed to upload buffer to S3: " + error!!);
   }
 };
 

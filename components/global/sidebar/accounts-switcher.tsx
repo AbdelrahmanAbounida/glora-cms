@@ -70,8 +70,8 @@ const AccountSwitcher = ({ agencyId }: { agencyId: string }) => {
                   <Image
                     src={agencyDetails?.agencyLogo || "/logo2.png"}
                     alt="Photo by Drew Beamer"
-                    width={70}
-                    height={70}
+                    width={50}
+                    height={50}
                     className="rounded-md object-cover"
                   />
                   {/* </AspectRatio> */}
@@ -105,8 +105,8 @@ const AccountSwitcher = ({ agencyId }: { agencyId: string }) => {
                     <Image
                       src={subaccount?.subAccountLogo || "/logo2.png"}
                       alt="Subaccount Logoo"
-                      width={70}
-                      height={70}
+                      width={40}
+                      height={40}
                       className="rounded-md object-cover"
                     />
                     <div className="flex flex-col gap-1">

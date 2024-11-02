@@ -16,7 +16,11 @@ export const fetcher = async ([key, agencyId]: [string, string]) => {
 export const useAgencySubaccounts = ({ agencyId }: { agencyId: string }) => {
   const { data, isLoading, error } = useSWR(
     ["getUserHistory", agencyId],
-    fetcher
+    fetcher,
+    {
+      // revalidateOnFocus: false,
+      // refreshInterval: 0,
+    }
   );
   return { data, isLoading, error };
 };

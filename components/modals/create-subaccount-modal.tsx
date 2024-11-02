@@ -29,6 +29,7 @@ import { createSubaccount } from "@/actions/subaccount/create-account";
 import FileUpload from "../global/file-upload";
 import { Loader } from "lucide-react";
 import { uploadSubaccountLogo } from "@/lib/s3";
+import { updateSubaccountLogo } from "@/actions/subaccount/update-subaccount";
 
 const computeSHA256 = async (file: File) => {
   const buffer = await file.arrayBuffer();
@@ -59,15 +60,20 @@ const handleUploadImage = async (file: File, subaccountId: string) => {
     }
 
     if (signedURLResult?.url) {
-      console.log(signedURLResult?.url);
       // get image
-      await fetch(signedURLResult?.url, {
+      const response = await fetch(signedURLResult?.url, {
         method: "PUT",
         headers: {
           "Content-Type": file.type,
         },
         body: file,
       });
+
+      if (!response.ok) {
+        toast.error("Failed to upload image");
+        return;
+      }
+      return signedURLResult.url.split("?")[0];
       // toast.success("File uploaded successfully");
     } else {
       toast.error("Something went wrong");
@@ -112,7 +118,18 @@ const CreateSubAccountModal = ({
       // 2- upload logo to s3
       if (newSubaccount) {
         // 2- update its image in s3
-        // const imageUrl = await handleUploadImage(data.imageFile, newSubaccount.id);  // TODO:: Handle upload image
+        const imageUrl = await handleUploadImage(
+          data.subAccountLogo,
+          newSubaccount.id
+        );
+
+        console.log({ imageUrl });
+
+        // update the subaccount to this logo
+        await updateSubaccountLogo({
+          subaccountId: newSubaccount.id,
+          logo: imageUrl,
+        });
 
         toast.success("Subaccount has been created successfully");
         router.push(`/subaccount/${newSubaccount?.id}/dashboard`);

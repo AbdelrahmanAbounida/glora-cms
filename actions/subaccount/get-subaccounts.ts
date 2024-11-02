@@ -14,11 +14,17 @@ export const getUserSubaccounts = async ({
     throw new Error("You are not unAuthorized to do this action");
   }
 
+  const useRole = session.user.role;
+
   const subaccounts = await db.subAccount.findMany({
     where: {
       agencyId,
     },
   });
+
+  if (useRole == "AGENCY_ADMIN" || useRole == "AGENCY_OWNER") {
+    return subaccounts;
+  }
 
   // filter subaccount according to current user
   const permissions = await db.permission.findMany({
