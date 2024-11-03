@@ -37,7 +37,7 @@ export default async function RootLayout({
 
       <div className="w-full flex md:pl-[350px]  flex-col">
         {/** Navbar */}
-        <Navbar />
+        <Navbar sideType={"agency"} agencyId={params.agenycId} />
 
         {/** Main page */}
         <div className=" bg-muted/20  m-5 rounded-sm my-2 p-3 h-full ">
