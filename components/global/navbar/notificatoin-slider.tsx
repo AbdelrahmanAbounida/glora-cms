@@ -13,8 +13,15 @@ import React from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useCurrentSelectedAgencyOrSubaccount } from "@/hooks/use-selected-agency";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const NotificationSlider = () => {
+  const { agencyId, subaccountId } = useCurrentSelectedAgencyOrSubaccount();
+  const { data: notifications, isLoading } = useNotifications({ subaccountId });
+
+  // TODO:: Filter the notifications to current subaccountId
   return (
     <Sheet>
       <SheetTrigger>
@@ -39,9 +46,13 @@ const NotificationSlider = () => {
 
             {/** List of notificatoins  */}
             <div className="gap-4 flex flex-col h-full overflow-auto pt-4 pb-12 ">
-              {[1, 2, 3, 1].map((notification, index) => (
-                <NotificationItem key={index} />
-              ))}
+              {isLoading
+                ? [1, 2, 3, 1].map((notification, index) => (
+                    <Skeleton className="w-full h-24 rounded-md" key={index} />
+                  ))
+                : notifications?.map((notification, index) => (
+                    <NotificationItem key={index} />
+                  ))}
             </div>
           </SheetDescription>
         </SheetHeader>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -22,6 +22,7 @@ import { useCurrentAgency } from "@/hooks/use-agency";
 import CreateSubAccountModal from "@/components/modals/create-subaccount-modal";
 import { useCurrentRole } from "@/hooks/use-current-role";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrentSelectedAgencyOrSubaccount } from "@/hooks/use-selected-agency";
 
 const AccountSwitcher = ({ agencyId }: { agencyId: string }) => {
   const { data: subaccounts, isLoading } = useAgencySubaccounts({ agencyId });
@@ -29,6 +30,14 @@ const AccountSwitcher = ({ agencyId }: { agencyId: string }) => {
   const userRole = useCurrentRole();
   const disableCreateSubaccount =
     userRole == "SUBACCOUNT_GUEST" || userRole == "SUBACCOUNT_USER";
+
+  const { setCurrentAgencyId } = useCurrentSelectedAgencyOrSubaccount();
+
+  useEffect(() => {
+    setCurrentAgencyId(agencyId);
+  }, [agencyId]);
+
+  // tODO: handle switching proces
 
   return (
     <Popover>

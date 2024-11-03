@@ -3,13 +3,15 @@
 import { UserRole } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, Copy, Trash, Edit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
@@ -82,9 +84,17 @@ export const columns: ColumnDef<TeamProps>[] = [
       );
     },
     cell: ({ row }) => {
-      const role = row.getValue("role") as string;
+      const role = row.getValue("role") as UserRole;
       return (
-        <div className="flex items-center gap-2">
+        <div
+          className={cn(
+            "flex items-center gap-2 max-w-[150px] text-xs text-gray-200 text-center justify-center p-1 rounded-md",
+            role == "AGENCY_ADMIN" ||
+              (role == "AGENCY_OWNER" && "bg-green-800"),
+            role == "SUBACCOUNT_USER" && "bg-yellow-700",
+            role == "SUBACCOUNT_GUEST" && "bg-cyan-800"
+          )}
+        >
           <p className="text-md font-medium">{role}</p>
         </div>
       );
@@ -97,30 +107,33 @@ export const columns: ColumnDef<TeamProps>[] = [
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="">
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4 ring-0 focus:ring-0" />
               <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[150px]">
-            <DropdownMenuItem className="cursor-pointer">
-              <Link
-                className="flex items-center justify-between w-full"
-                href={`#`}
-              >
-                Edit
-              </Link>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(member.email)}
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Copy Email
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            {/** TODO:: Edit user modal  */}
+            <DropdownMenuItem>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Details
             </DropdownMenuItem>
 
-            <Button
-              variant={"destructive"}
-              className={cn(
-                " font-normal bg-red-600 hover:bg-red-600/90 hover:text-white text-white w-full rounded-sm h-full p-[6px] mt-1 flex text-start justify-start"
-              )}
-            >
-              Delete
-            </Button>
+            {/** TODO:: confirm delete modal  */}
+            <DropdownMenuItem>
+              <Trash className="mr-2 h-4 w-4" />
+              Remove User
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

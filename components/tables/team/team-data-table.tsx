@@ -36,6 +36,7 @@ import {
   PlusCircle,
   SearchIcon,
 } from "lucide-react";
+import InviteMemberModal from "@/components/modals/invite-member-modal";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -111,9 +112,11 @@ export function DataTable<TData, TValue>({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button className="flex items-center" size={"sm"}>
-            <PlusCircle className="w-4 h-4 mr-2" /> Add
-          </Button>
+          <InviteMemberModal>
+            <Button className="flex items-center" size={"sm"}>
+              <PlusCircle className="w-4 h-4 mr-2" /> Add
+            </Button>
+          </InviteMemberModal>
         </div>
       </div>
       <div className="rounded-md border">
