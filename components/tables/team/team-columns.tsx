@@ -131,7 +131,7 @@ export const columns: ColumnDef<TeamProps>[] = [
 
             {/** TODO:: confirm delete modal  */}
             <DropdownMenuItem>
-              <Trash className="mr-2 h-4 w-4" />
+              <Trash className="mr-2 h-4 w-4 text-red-500" />
               Remove User
             </DropdownMenuItem>
           </DropdownMenuContent>
